@@ -22,8 +22,43 @@ var ip = '127.0.0.1';
 // incoming requests.
 //
 // After creating the server, we will tell it to listen on the given port and IP. */
-var handleRequest = require('./request-handler')
-var server = http.createServer(handleRequest);
+var requestHandler = require('./request-handler')
+var handleRequest = requestHandler.requestHandler;
+var response = function() {
+  this._ended = false;
+  this._responseCode = null;
+  this._headers = null;
+  this._data = null;
+
+  this.writeHead = function(responseCode, headers) {
+    this._responseCode = responseCode;
+    this._headers = headers;
+  }.bind(this);
+
+  this.end = function(data) {
+    this._ended = true;
+    this._data = data;
+  }.bind(this);
+},
+
+var request = function(url, method, postdata) {
+  this.url = url;
+  this.method = method;
+  this._postData = postdata;
+  this.setEncoding = function() { /* noop */ };
+
+  this.addListener = this.on = function(type, callback) {
+    if (type === 'data') {
+      callback(Buffer(JSON.stringify(this._postData)));
+    }
+
+    if (type === 'end') {
+      callback();
+    }
+    return this;
+  }.bind(this);
+}
+var server = http.createServer(handleRequest(new request('/classes/messages', 'GET'), new response()));
 console.log('Listening on http://' + ip + ':' + port);
 server.listen(port, ip);
 
