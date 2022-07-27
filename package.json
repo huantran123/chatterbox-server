@@ -16,7 +16,7 @@
     "underscore": "^1.11.0"
   },
   "scripts": {
-    "start:server": "node server/basic-server.js",
+    "start:server": "nodemon server/basic-server.js",
     "start:client": "npx live-server",
     "test": "mocha server/spec",
     "lint": "eslint ./"
