@@ -24,7 +24,6 @@ var handleRequest = requestHandlerImport.requestHandler;
 
 var server = http.createServer(handleRequest);
 console.log('Listening on http://' + ip + ':' + port);
-console.log('hello');
 server.listen(port, ip);
 
 // To start this server, run:

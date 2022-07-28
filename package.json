@@ -18,7 +18,7 @@
   "scripts": {
     "start:server": "nodemon server/basic-server.js",
     "start:client": "npx live-server",
-    "test": "mocha server/spec",
+    "test": "mocha server/spec --watch",
     "lint": "eslint ./"
   },
   "devDependencies": {
