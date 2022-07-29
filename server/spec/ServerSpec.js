@@ -91,4 +91,84 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
+  it('Should respond with messages that were previously posted', function() {
+    var stubMsg = {
+      username: 'Huan',
+      text: 'is a boss'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(201);
+
+    // Now if we request the log for that room the message we posted should be there:
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    var messages = JSON.parse(res._data);
+    expect(messages.length).to.be.above(0);
+    expect(messages[messages.length - 1].username).to.equal('Huan');
+    expect(messages[messages.length - 1].text).to.equal('is a boss');
+    expect(res._ended).to.equal(true);
+  });
+
+  it('Should respond with messages that has no roomnam specified', function() {
+    var stubMsg = {
+      username: 'test 2',
+      text: 'no rooms avail'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(201);
+
+    // Now if we request the log for that room the message we posted should be there:
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    var messages = JSON.parse(res._data);
+    expect(messages.length).to.be.above(0);
+    expect(messages[messages.length - 1].username).to.equal('test 2');
+    expect(messages[messages.length - 1].text).to.equal('no rooms avail');
+    expect(messages[messages.length - 1].roomname, 'to be undefined');
+    expect(res._ended).to.equal(true);
+  });
+
+  it('Last id should be equal to the length of the message array', function() {
+    var stubMsg = {
+      username: 'test 3',
+      text: 'testing id number'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(201);
+
+    // Now if we request the log for that room the message we posted should be there:
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    var messages = JSON.parse(res._data);
+    expect(messages.length).to.be.above(0);
+    expect(messages[messages.length - 1].username).to.equal('test 3');
+    expect(messages[messages.length - 1].text).to.equal('testing id number');
+    expect(messages[messages.length - 1].id).to.equal(messages.length)
+    expect(res._ended).to.equal(true);
+  });
+
 });
