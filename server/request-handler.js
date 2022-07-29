@@ -43,10 +43,10 @@ var requestHandler = function(request, response) {
   var headers = defaultCorsHeaders;
 
 
-  if (url === '/classes/messages' && method === 'GET') {
+  if (url === '/classes/messages' && method === 'GET' || method === 'OPTIONS') {
     response.writeHead(200, headers);
     response.end(JSON.stringify(messagesData));
-  } else if (url === '/classes/messages' && method === 'POST') {
+  } else if (url === '/classes/messages' && method === 'POST' ) {
     var postMessage = '';
     // response.writeHead(201, headers);
     request.on('data', (chunk) => {
