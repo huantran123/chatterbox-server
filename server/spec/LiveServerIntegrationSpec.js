@@ -3,10 +3,10 @@ var expect = require('chai').expect;
 
 describe('server', function() {
 
-  it('should respond to GET requests for /classes/messages with a 200 status code', function(done) {
+  it('should respond to GET requests for /classes/messages with a 200 status code', function(test) {
     request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
       expect(response.statusCode).to.equal(200);
-      done();
+      test();
     });
   });
 
@@ -65,5 +65,26 @@ describe('server', function() {
     });
   });
 
+  it('should 200 when method is OPTIONS', function(done) {
+    var requestParams = {method: 'OPTIONS',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+    };
+
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
+
+  it('should 404 when method is DELETE', function(done) {
+    var requestParams = {method: 'DELETE',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+    };
+
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(404);
+      done();
+    });
+  });
 
 });

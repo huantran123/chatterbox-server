@@ -43,10 +43,10 @@ var requestHandler = function(request, response) {
   var headers = defaultCorsHeaders;
 
 
-  if (url === '/classes/messages' && method === 'GET' || method === 'OPTIONS') {
+  if (url === '/classes/messages' && (method === 'GET' || method === 'OPTIONS')) {
     response.writeHead(200, headers);
     response.end(JSON.stringify(messagesData));
-  } else if (url === '/classes/messages' && method === 'POST' ) {
+  } else if (url === '/classes/messages' && method === 'POST') {
     var postMessage = '';
     // response.writeHead(201, headers);
     request.on('data', (chunk) => {
@@ -61,7 +61,7 @@ var requestHandler = function(request, response) {
         const {id, username, text, roomname} = JSON.parse(postMessage);
         const message = {id: messagesData.length + 1, username, text, roomname};
         messagesData.push(message);
-        console.log(message, messagesData);
+        //console.log(message, messagesData);
         response.end();
     });
   } else {
@@ -113,5 +113,3 @@ module.exports.requestHandler = requestHandler;
 //   'access-control-allow-headers': 'content-type, accept, authorization',
 //   'access-control-max-age': 10 // Seconds.
 // };
-
-
