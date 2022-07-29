@@ -11,7 +11,16 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-let messagesData = [];
+var messagesData = [];
+
+var defaultCorsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept, authorization',
+  'access-control-max-age': 10, // Seconds.
+  'Content-Type': 'application/json'
+};
+
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -31,44 +40,33 @@ var requestHandler = function(request, response) {
 
 
   const { method, url } = request;
-  var headers = request.headers ? request.headers : defaultCorsHeaders;
+  var headers = defaultCorsHeaders;
 
-  if (url === '/classes/messages') {
-    if (method === 'GET') {
-      response.writeHead(200, headers);
 
-    } else if (method === 'POST') {
+  if (url === '/classes/messages' && method === 'GET') {
+    response.writeHead(200, headers);
+    response.end(JSON.stringify(messagesData));
+  } else if (url === '/classes/messages' && method === 'POST') {
+    var postMessage = '';
+    // response.writeHead(201, headers);
+    request.on('data', (chunk) => {
+      // Storing the chunk data
+      //const parsedChunk = Buffer.concat(chunk).toString();
+
+      postMessage += chunk.toString();
+      //console.log(postMessage);
+    }).on('end', () => {
+
       response.writeHead(201, headers);
-      // request.on('data', chunk => {
-      //   console.log({chunk}, 'here')
-      //   messagesData.push(Buffer.concat({chunk}).toString());
-      //   console.log(messagesData)
-      //   console.log('successfully posted message')
-
-
-      request.on('data', (chunk) => {
-
-        // Storing the chunk data
-        const parsedChunk = Buffer.concat(chunk).toString();
-        //messagesData.push(parsedChunk);
-        console.log(parsedChunk);
-      });
-
-      request.on('end', () => {
-
-          // Parsing the chunk data
-          // const parsedBody = Buffer.concat(messagesData).toString();
-          // // const message = parsedBody.split('=')[1];
-
-          // // Printing the data
-          // console.log('Parsebody: ' +  parsedBody);
-
-      });
-
-        return response.end();
-    } else {
-      response.writeHead(404, headers);
-    }
+        const {id, username, text, roomname} = JSON.parse(postMessage);
+        const message = {id: messagesData.length + 1, username, text, roomname};
+        messagesData.push(message);
+        console.log(message, messagesData);
+        response.end();
+    });
+  } else {
+    response.writeHead(404, headers);
+    response.end();
   }
 
   // The outgoing status.
@@ -95,7 +93,7 @@ var requestHandler = function(request, response) {
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
   //console.log(messagesData)
-  response.end('testing end');
+  //response.end('testing end');
 };
 
 module.exports.requestHandler = requestHandler;
@@ -109,11 +107,11 @@ module.exports.requestHandler = requestHandler;
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept, authorization',
-  'access-control-max-age': 10 // Seconds.
-};
+// var defaultCorsHeaders = {
+//   'access-control-allow-origin': '*',
+//   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+//   'access-control-allow-headers': 'content-type, accept, authorization',
+//   'access-control-max-age': 10 // Seconds.
+// };
 
 
